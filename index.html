@@ -1,122 +1,440 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2563eb">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oggi Planner V4</title>
+ 
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon.svg">
-<title>Oggi — V1</title>
+ 
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#152033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{max-width:520px;margin:auto;padding:18px 16px 28px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.kicker{font-size:12px;font-weight:700;color:#64748b;letter-spacing:.08em}.title{font-size:32px;font-weight:800;margin-top:3px}
-button,input,select{font:inherit}button{border:0;cursor:pointer}.primary{background:#2563eb;color:white;border-radius:14px;padding:12px 15px;font-weight:700}
-.card{background:white;border:1px solid #e7ebf0;border-radius:18px;padding:15px;margin-top:10px}.event{display:flex;gap:12px}.bar{width:4px;border-radius:5px;background:#2563eb}.time{width:54px;font-weight:700}.muted{color:#64748b;font-size:14px;margin-top:3px}
-.panel{background:white;border:1px solid #e7ebf0;border-radius:20px;padding:16px;margin-top:14px}.hidden{display:none}
-label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,select{width:100%;padding:12px;border:1px solid #cfd6df;border-radius:12px;background:white;margin-top:5px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.save{width:100%;margin-top:14px}.suggest{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.chip{background:#f1f5f9;padding:9px 11px;border-radius:999px;font-size:13px}
-.item{display:flex;align-items:center;gap:10px;background:#f8fafc;padding:10px;border-radius:12px;margin-top:7px}.item input{width:auto;margin:0}
-.nav{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #e2e8f0;margin-top:20px;padding-top:12px;text-align:center;color:#64748b;font-size:12px}.nav .active{color:#2563eb;font-weight:700}
-@media(max-width:360px){.top{align-items:flex-start}.primary{padding:10px}.title{font-size:28px}}
+*{box-sizing:border-box}
+ 
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+background:#f5f7fb;
+color:#152033;
+}
+ 
+header{
+background:#2563eb;
+color:white;
+padding:20px;
+}
+ 
+main{
+max-width:900px;
+margin:auto;
+padding:15px;
+}
+ 
+.card{
+background:white;
+border-radius:18px;
+padding:16px;
+margin-bottom:15px;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+ 
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 14px;
+border-radius:12px;
+cursor:pointer;
+}
+ 
+input,select{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:10px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+ 
+.calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+}
+ 
+.day{
+background:#eef3ff;
+padding:12px 0;
+text-align:center;
+border-radius:10px;
+cursor:pointer;
+}
+ 
+.today{
+background:#2563eb;
+color:white;
+font-weight:bold;
+}
+ 
+.event{
+padding:10px;
+background:#eef3ff;
+border-radius:10px;
+margin-top:8px;
+}
+ 
+.shopping-item{
+display:flex;
+justify-content:space-between;
+padding:8px;
+margin-top:5px;
+background:#f1f5f9;
+border-radius:10px;
+}
+ 
+.small{
+font-size:14px;
+color:#64748b;
+}
+ 
+h1,h2{
+margin-top:0;
+}
 </style>
 </head>
+ 
 <body>
+ 
+<header>
+<h1>Oggi Planner V4</h1>
+<div id="today"></div>
+</header>
+ 
 <main>
-<section class="top">
-<div><div class="kicker" id="todayLabel"></div><div class="title">Oggi</div></div>
-<div style="display:flex;gap:8px"><button class="primary" id="openSettings">⚙</button><button class="primary" id="openAdd">＋ Aggiungi</button></div>
-</section>
-
-<section id="agenda">
-<div class="card event"><div class="bar"></div><div class="time" id="workStartLabel">08:30</div><div><b>Lavoro</b><div class="muted" id="workSummary">Ufficio · 9h</div></div></div>
-<div class="card event"><div class="bar" style="background:#8b5cf6"></div><div class="time">13:00</div><div><b>Appuntamento</b><div class="muted">Dentista · 60 min</div></div></div>
-<div class="card event"><div class="bar" style="background:#16a34a"></div><div class="time">18:30</div><div><b>Palestra</b><div class="muted">Corsa · 60 min</div></div></div>
-<div class="card event"><div class="bar" style="background:#f97316"></div><div class="time">20:00</div><div><b>Inglese</b><div class="muted">Lezione · 50 min</div></div></div>
-</section>
-
-<section id="settingsPanel" class="panel hidden">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Impostazioni</h2><button id="closeSettings">✕</button></div>
-<div class="muted" style="margin-top:6px">Imposta il tuo normale orario di lavoro. Potrai modificarlo quando vuoi.</div>
-<div class="grid">
-<label>Inizio lavoro<input id="workStart" type="time"></label>
-<label>Fine lavoro<input id="workEnd" type="time"></label>
+ 
+<div class="card">
+ 
+<h2>⚙️ Orario di lavoro</h2>
+ 
+<label>Inizio</label>
+<input type="time" id="workStart">
+ 
+<label>Fine</label>
+<input type="time" id="workEnd">
+ 
+<button id="saveWork">
+Salva
+</button>
+ 
 </div>
-<button class="primary save" id="saveSettings">Salva orario di lavoro</button>
-</section>
-
-<section id="addPanel" class="panel hidden">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Aggiungi</h2><button id="closeAdd">✕</button></div>
-<label>Cosa devi fare?<input id="task" placeholder="Es. Lezione di inglese"></label>
-<div class="grid">
-<label>Categoria<select id="category"><option>Lezione</option><option>Appuntamento</option><option>Lavoro</option><option>Sport</option><option>Scadenza</option></select></label>
-<label>Durata<select id="duration"><option>50 min</option><option>30 min</option><option>60 min</option><option>90 min</option></select></label>
+ 
+<div class="card">
+ 
+<h2>📅 Calendario</h2>
+ 
+<h3 id="monthLabel"></h3>
+ 
+<div class="calendar" id="calendar"></div>
+ 
 </div>
-<div class="grid">
-<label>Data<input id="date" type="date"></label>
-<label>Ora<input id="time" type="time" value="20:00"></label>
+ 
+<div class="card">
+ 
+<h2>➕ Nuovo evento</h2>
+ 
+<input id="eventTitle" placeholder="Titolo evento">
+ 
+<input id="eventDate" type="date">
+ 
+<input id="eventTime" type="time">
+ 
+<button id="saveEvent">
+Aggiungi evento
+</button>
+ 
 </div>
-<button class="primary save" id="save">Salva</button>
-</section>
-
-<section class="panel">
-<div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
-<div><h2 style="margin:0;font-size:20px">🛒 Lista della spesa</h2><div class="muted">I prodotti restano nella memoria</div></div>
+ 
+<div class="card">
+ 
+<h2>🗓️ Eventi</h2>
+ 
+<div id="events"></div>
+ 
 </div>
-<div style="display:flex;gap:8px;margin-top:12px">
-<input id="product" placeholder="Scrivi un prodotto..." style="margin:0;min-width:0">
-<button class="primary" id="addProduct">＋</button>
-</div>
-<div id="suggestions" class="suggest"></div>
+ 
+<div class="card">
+ 
+<h2>🛒 Lista della spesa</h2>
+ 
+<input id="product">
+ 
+<button id="addProduct">
+Aggiungi prodotto
+</button>
+ 
 <div id="shopping"></div>
-</section>
-
-<nav class="nav"><div class="active">⌂<br>Oggi</div><div>▦<br>Calendario</div><div>☷<br>Liste</div><div>◷<br>Scadenze</div></nav>
+ 
+</div>
+ 
 </main>
+ 
 <script>
-const memoryKey="appv1-memory", shoppingKey="appv1-shopping", workStartKey="appv1-work-start", workEndKey="appv1-work-end";
-let memory=JSON.parse(localStorage.getItem(memoryKey)||'["Banane","Latte","Uova","Pane integrale","Yogurt","Acqua","Pasta integrale"]');
-let shopping=JSON.parse(localStorage.getItem(shoppingKey)||'["Banane","Latte","Uova"]');
-let workStart=localStorage.getItem(workStartKey)||"08:30";
-let workEnd=localStorage.getItem(workEndKey)||"17:30";
-const $=id=>document.getElementById(id);
-function todayInput(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function formatToday(){return new Intl.DateTimeFormat('it-IT',{weekday:'long',day:'numeric',month:'long'}).format(new Date()).toUpperCase()}
-function durationText(start,end){const [sh,sm]=start.split(':').map(Number),[eh,em]=end.split(':').map(Number);let mins=(eh*60+em)-(sh*60+sm);if(mins<0)mins+=1440;const h=Math.floor(mins/60),m=mins%60;return `${h}h${m?` ${m}m`:''}`}
-function renderHeader(){
-  $('todayLabel').textContent=formatToday();
-  $('workStartLabel').textContent=workStart;
-  $('workSummary').textContent=`Ufficio · ${durationText(workStart,workEnd)}`;
-  $('workStart').value=workStart;
-  $('workEnd').value=workEnd;
-  $('date').value=todayInput();
+ 
+const events =
+JSON.parse(localStorage.getItem("events")||"[]");
+ 
+const shopping =
+JSON.parse(localStorage.getItem("shopping")||"[]");
+ 
+const today =
+new Date();
+ 
+document.getElementById("today").innerText =
+today.toLocaleDateString("it-IT",{
+weekday:"long",
+day:"numeric",
+month:"long",
+year:"numeric"
+});
+ 
+function renderCalendar(){
+ 
+const calendar =
+document.getElementById("calendar");
+ 
+calendar.innerHTML="";
+ 
+const now=new Date();
+ 
+const year=now.getFullYear();
+ 
+const month=now.getMonth();
+ 
+document.getElementById("monthLabel")
+.innerText=
+new Intl.DateTimeFormat(
+'it-IT',
+{month:'long',year:'numeric'}
+).format(now);
+ 
+const days=
+new Date(year,month+1,0).getDate();
+ 
+for(let i=1;i<=days;i++){
+ 
+const d=document.createElement("div");
+ 
+d.className="day";
+ 
+if(
+i===today.getDate()
+){
+d.classList.add("today");
 }
-function saveState(){localStorage.setItem(memoryKey,JSON.stringify(memory));localStorage.setItem(shoppingKey,JSON.stringify(shopping));localStorage.setItem(workStartKey,workStart);localStorage.setItem(workEndKey,workEnd)}
-function render(){
- const q=$("product").value.trim().toLowerCase();
- $("suggestions").innerHTML=(q?memory.filter(x=>x.toLowerCase().includes(q)):memory.slice(0,5)).map(x=>`<button class="chip" data-suggest="${x.replaceAll('"','&quot;')}">${x}</button>`).join("");
- $("shopping").innerHTML=shopping.map((x,i)=>`<label class="item"><input type="checkbox" data-i="${i}"><span>${x}</span></label>`).join("");
+ 
+d.innerText=i;
+ 
+calendar.appendChild(d);
+ 
 }
-$("openAdd").onclick=()=>{$("addPanel").classList.remove("hidden");$("settingsPanel").classList.add("hidden");$("date").value=todayInput();$("task").focus()};
-$("closeAdd").onclick=()=>$("addPanel").classList.add("hidden");
-$("openSettings").onclick=()=>{$("settingsPanel").classList.remove("hidden");$("addPanel").classList.add("hidden")};
-$("closeSettings").onclick=()=>$("settingsPanel").classList.add("hidden");
-$("saveSettings").onclick=()=>{
- const start=$("workStart").value,end=$("workEnd").value;
- if(!start||!end)return;
- workStart=start;workEnd=end;saveState();renderHeader();$("settingsPanel").classList.add("hidden");
+ 
+}
+ 
+function renderEvents(){
+ 
+const container=
+document.getElementById("events");
+ 
+container.innerHTML="";
+ 
+events.forEach((e,index)=>{
+ 
+container.innerHTML+=`
+<div class="event">
+<b>${e.title}</b><br>
+<span class="small">
+${e.date} ${e.time}
+</span>
+<br><br>
+<button onclick="removeEvent(${index})">
+Elimina
+</button>
+</div>
+`;
+ 
+});
+ 
+}
+ 
+function renderShopping(){
+ 
+const container=
+document.getElementById("shopping");
+ 
+container.innerHTML="";
+ 
+shopping.forEach((item,index)=>{
+ 
+container.innerHTML+=`
+<div class="shopping-item">
+${item}
+<button onclick="removeProduct(${index})">
+X
+</button>
+</div>
+`;
+ 
+});
+ 
+}
+ 
+function removeEvent(index){
+ 
+events.splice(index,1);
+ 
+localStorage.setItem(
+"events",
+JSON.stringify(events)
+);
+ 
+renderEvents();
+ 
+}
+ 
+function removeProduct(index){
+ 
+shopping.splice(index,1);
+ 
+localStorage.setItem(
+"shopping",
+JSON.stringify(shopping)
+);
+ 
+renderShopping();
+ 
+}
+ 
+document.getElementById(
+"saveEvent"
+).onclick=()=>{
+ 
+events.push({
+ 
+title:
+document.getElementById(
+"eventTitle"
+).value,
+ 
+date:
+document.getElementById(
+"eventDate"
+).value,
+ 
+time:
+document.getElementById(
+"eventTime"
+).value
+ 
+});
+ 
+localStorage.setItem(
+"events",
+JSON.stringify(events)
+);
+ 
+renderEvents();
+ 
 };
-$("save").onclick=()=>{
- const t=$("task").value.trim();if(!t){$("task").focus();return}
- const el=document.createElement("div");el.className="card event";el.innerHTML=`<div class="bar"></div><div class="time">${$("time").value}</div><div><b>${t.replaceAll("<","&lt;")}</b><div class="muted">${$("category").value} · ${$("duration").value}</div></div>`;
- $("agenda").appendChild(el);$("task").value="";$("addPanel").classList.add("hidden");
+ 
+document.getElementById(
+"addProduct"
+).onclick=()=>{
+ 
+const value=
+document.getElementById(
+"product"
+).value;
+ 
+shopping.push(value);
+ 
+localStorage.setItem(
+"shopping",
+JSON.stringify(shopping)
+);
+ 
+renderShopping();
+ 
 };
-$("addProduct").onclick=()=>{const v=$("product").value.trim();if(!v)return;if(!memory.some(x=>x.toLowerCase()===v.toLowerCase()))memory.push(v);if(!shopping.some(x=>x.toLowerCase()===v.toLowerCase()))shopping.push(v);$("product").value="";saveState();render()};
-$("product").oninput=render;
-$("suggestions").onclick=e=>{const b=e.target.closest("[data-suggest]");if(!b)return;const v=b.dataset.suggest;if(!shopping.includes(v))shopping.push(v);$("product").value="";saveState();render()};
-$("shopping").onchange=e=>{if(e.target.dataset.i!==undefined){shopping.splice(+e.target.dataset.i,1);saveState();render()}};
-renderHeader();render();
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-</script>
-</body>
-</html>
+ 
+document.getElementById(
+"saveWork"
+).onclick=()=>{
+ 
+localStorage.setItem(
+"workStart",
+document.getElementById(
+"workStart"
+).value
+);
+ 
+localStorage.setItem(
+"workEnd",
+document.getElementById(
+"workEnd"
+).value
+);
+ 
+alert("Orario salvato");
+ 
+};
+ 
+document.getElementById(
+"workStart"
+).value=
+localStorage.getItem("workStart")
+||"08:30";
+ 
+ 
+Mostra più linee
+
+Dopo averlo salvato:
+
+Add file → Create new file → index.html
+Incolla il codice
+Commit changes
+Vai in Settings → Pages
+Attiva GitHub Pages sul branch main
+
+Poi apri:
+
+Plain Text
+https://iurli070.github.io/oggi-planner-v4/
+Mostra più linee
+
+Questa V4 ha già:
+
+✅ calendario mensile
+✅ aggiunta eventi
+✅ lista spesa
+✅ orario di lavoro modificabile
+✅ salvataggio dati
+✅ PWA installabile
+
+Il passo successivo sarà rendere il calendario interattivo (click sul giorno e visualizzazione degli eventi di quel giorno).
+
+Fornisci il tuo feedback su BizChat
+Rendi il calendario interattivoAggiungi la modifica degli eventiCome aggiorno la pagina su GitHub Pages?
+TuttoFileFilePower BIPower BI
+
+
+
+
+Invia un messaggio a Copilot
+Il contenuto generato dall'IA potrebbe non essere corretto
+Impostazioni e molto altro
+Auto
+Altre opzioni
+Altre opzioni
+Altre opzioni
+Riprova
+Usato Auto
+Altre opzioni
