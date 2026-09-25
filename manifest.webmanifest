@@ -1,17 +1,8 @@
 {
-  "name": "Oggi — Planner V1",
-  "short_name": "Oggi",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#2563eb",
-  "lang": "it",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+"name": "Oggi Planner",
+"short_name": "Oggi",
+"start_url": "./",
+"display": "standalone",
+"background_color": "#f5f7fb",
+"theme_color": "#2563eb"
 }
