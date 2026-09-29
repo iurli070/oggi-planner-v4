@@ -4,392 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2563eb">
- 
 <title>Oggi Planner V4</title>
- 
 <link rel="manifest" href="manifest.webmanifest">
- 
 <style>
- 
-*{
-box-sizing:border-box;
-}
- 
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-background:#f5f7fb;
-color:#1e293b;
-}
- 
-header{
-background:#2563eb;
-color:white;
-padding:20px;
-}
- 
-main{
-max-width:900px;
-margin:auto;
-padding:15px;
-}
- 
-.card{
-background:white;
-border-radius:16px;
-padding:16px;
-margin-bottom:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
- 
-h1,h2,h3{
-margin-top:0;
-}
- 
-input,
-button,
-select{
-font:inherit;
-}
- 
-input,
-select{
-width:100%;
-padding:10px;
-border:1px solid #d1d5db;
-border-radius:10px;
-margin-top:5px;
-margin-bottom:10px;
-}
- 
-button{
-background:#2563eb;
-color:white;
-border:none;
-padding:10px 14px;
-border-radius:10px;
-cursor:pointer;
-}
- 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
- 
-.calendar{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px;
-}
- 
-.day{
-background:#eef2ff;
-padding:12px;
-border-radius:10px;
-text-align:center;
-cursor:pointer;
-}
-.hasEvent{
-border:3px solid #16a34a;
-font-weight:bold;
-}
-  
-.today{
-background:#2563eb;
-color:white;
-font-weight:bold;
-}
- 
-.event{
-background:#f8fafc;
-padding:10px;
-border-radius:10px;
-margin-top:8px;
-}
- 
-.shopping-item{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-margin-top:6px;
-background:#f8fafc;
-border-radius:10px;
-}
- 
-.small{
-font-size:13px;
-color:#64748b;
-}
- 
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f7fb;color:#1e293b}
+header{background:#2563eb;color:white;padding:20px}main{max-width:900px;margin:auto;padding:15px}
+.card{background:white;border-radius:16px;padding:16px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+h1,h2,h3{margin-top:0}input,button,select{font:inherit}input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;margin-top:5px;margin-bottom:10px}
+button{background:#2563eb;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}.secondary{background:#64748b!important}.danger{background:#dc2626!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day{background:#eef2ff;padding:12px;border-radius:10px;text-align:center;cursor:pointer}.hasEvent{background:#16a34a!important;color:white}.today{outline:3px solid #2563eb;font-weight:bold}
+.event{background:#f8fafc;padding:10px;border-radius:10px;margin-top:8px}.shopping-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;margin-top:6px;background:#f8fafc;border-radius:10px}
+.shopping-item span{flex:1}.small,.empty{font-size:13px;color:#64748b}.empty{padding:8px 0}@media(max-width:600px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
- 
 <body>
- 
-<header>
- 
-<h1>Oggi Planner V4</h1>
- 
-<div id="today"></div>
- 
-</header>
- 
+<header><h1>Oggi Planner</h1><div id="today"></div></header>
 <main>
- 
-<div class="card">
- 
-<h2>Orario di lavoro</h2>
- 
-<div class="grid">
- 
-<div>
-<label>Inizio</label>
-<input type="time" id="workStart">
-</div>
- 
-<div>
-<label>Fine</label>
-<input type="time" id="workEnd">
-</div>
- 
-</div>
- 
-<button id="saveWork">
-Salva orario
-</button>
- 
-</div>
- 
-<div class="card">
- 
-<h2>Calendario</h2>
- 
-<h3 id="monthLabel"></h3>
- 
-<div id="calendar" class="calendar"></div>
- 
-</div>
- 
-<div class="card">
- 
-<h2>Nuovo evento</h2>
- 
-<input id="eventTitle" placeholder="Titolo evento">
- 
-<div class="grid">
- 
-<input id="eventDate" type="date">
- 
-<input id="eventTime" type="time">
- 
-</div>
- 
-<button id="saveEvent">
-Aggiungi evento
-</button>
- 
-</div>
- 
-<div class="card">
- 
-<h2>Eventi</h2>
- 
-<div id="events"></div>
- 
-</div>
- 
-<div class="card">
- 
-<h2>Lista della spesa</h2>
- 
-<input id="product" placeholder="Nuovo prodotto">
- 
-<button id="addProduct">
-Aggiungi prodotto
-</button>
- 
-<div id="shopping"></div>
- 
-</div>
- 
-</main>
- 
-<script>
- 
-const events =
-JSON.parse(localStorage.getItem("events") || "[]");
- 
-function saveEvents() {
-localStorage.setItem(
-"events",
-JSON.stringify(events)
-);
-}
- 
-document.getElementById("today").textContent =
-new Date().toLocaleDateString(
-"it-IT",
-{
-weekday:"long",
-day:"numeric",
-month:"long",
-year:"numeric"
-}
-);
- 
-function renderCalendar() {
- 
-const calendar =
-document.getElementById("calendar");
- 
-calendar.innerHTML = "";
- 
-const now = new Date();
- 
-const year = now.getFullYear();
-const month = now.getMonth();
- 
-const monthName =
-new Intl.DateTimeFormat(
-"it-IT",
-{
-month:"long",
-year:"numeric"
-}
-).format(now);
- 
-document.getElementById(
-"monthLabel"
-).textContent = monthName;
- 
-const daysInMonth =
-new Date(year, month + 1, 0).getDate();
- 
-for(let day=1; day<=daysInMonth; day++){
- 
-const d = document.createElement("div");
- 
-d.className = "day";
- 
-const dateString =
-`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
- 
-const hasEvent =
-events.some(event => event.date === dateString);
- 
-if(hasEvent){
-d.style.background = "#16a34a";
-d.style.color = "white";
-}
- 
-if(day === now.getDate()){
-d.classList.add("today");
-}
- 
-d.textContent = day;
- 
-calendar.appendChild(d);
-}
- 
-if(day === now.getDate()){
-d.classList.add("today");
-const dateString =
-`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
- 
-if(events.some(e => e.date === dateString)){
-d.classList.add("hasEvent");
-}
- 
-d.textContent = day;
- 
-calendar.appendChild(d);
- 
-}
- 
-}
- 
-function renderEvents() {
- 
-const container =
-document.getElementById("events");
- 
-container.innerHTML = "";
- 
-events.forEach((event,index)=>{
- 
-container.innerHTML += `
-<div class="event">
- 
-<b>${event.title}</b><br>
- 
-${event.date}
-${event.time}
- 
-<br><br>
- 
-<button onclick="deleteEvent(${index})">
-Elimina
-</button>
- 
-</div>
-`;
- 
-});
- 
-}
- 
-function deleteEvent(index){
- 
-events.splice(index,1);
- 
-saveEvents();
- 
-renderEvents();
- 
-}
- 
-document.getElementById(
-"saveEvent"
-).onclick = () => {
- 
-const title =
-document.getElementById(
-"eventTitle"
-).value;
- 
-const date =
-document.getElementById(
-"eventDate"
-).value;
- 
-const time =
-document.getElementById(
-"eventTime"
-).value;
- 
-if(!title) return;
- 
-events.push({
-title,
-date,
-time
-});
- 
-saveEvents();
- 
-renderEvents();
- 
-document.getElementById(
-"eventTitle"
-).value = "";
- 
-};
- 
-renderCalendar();
+<div class="card"><h2>Orario di lavoro</h2><div class="grid">
+<div><label>Inizio</label><input type="time" id="workStart"></div>
+<div><label>Fine</label><input type="time" id="workEnd"></div></div>
+<button id="saveWork">Salva orario</button><div id="workSaved" class="small"></div></div>
 
-``
-renderEvents();
- 
+<div class="card"><h2>Calendario</h2><h3 id="monthLabel"></h3><div id="calendar" class="calendar"></div></div>
+
+<div class="card"><h2>Nuovo evento</h2><input id="eventTitle" placeholder="Titolo evento">
+<div class="grid"><div><label>Data</label><input id="eventDate" type="date"></div>
+<div><label>Ora</label><input id="eventTime" type="time"></div></div>
+<button id="saveEvent">Aggiungi evento</button></div>
+
+<div class="card"><h2>Eventi</h2><div id="events"></div></div>
+
+<div class="card"><h2>Lista della spesa</h2><input id="product" placeholder="Nuovo prodotto">
+<button id="addProduct">Aggiungi prodotto</button><div id="shopping"></div></div>
+</main>
+
+<script>
+const events=JSON.parse(localStorage.getItem("events")||"[]");
+const shopping=JSON.parse(localStorage.getItem("shopping")||"[]");
+const memory=JSON.parse(localStorage.getItem("shoppingMemory")||"[]");
+
+function saveEvents(){localStorage.setItem("events",JSON.stringify(events))}
+function saveShopping(){localStorage.setItem("shopping",JSON.stringify(shopping))}
+function saveMemory(){localStorage.setItem("shoppingMemory",JSON.stringify(memory))}
+function localDateString(d=new Date()){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
+function renderToday(){
+ const n=new Date();
+ document.getElementById("today").textContent=n.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+
+function renderCalendar(){
+ const cal=document.getElementById("calendar");cal.innerHTML="";
+ const n=new Date(), y=n.getFullYear(), m=n.getMonth(), today=localDateString(n);
+ document.getElementById("monthLabel").textContent=new Intl.DateTimeFormat("it-IT",{month:"long",year:"numeric"}).format(n);
+ for(let day=1;day<=new Date(y,m+1,0).getDate();day++){
+  const d=document.createElement("div");d.className="day";
+  const ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+  d.textContent=day;if(ds===today)d.classList.add("today");if(events.some(e=>e.date===ds))d.classList.add("hasEvent");
+  d.onclick=()=>{document.getElementById("eventDate").value=ds;document.getElementById("eventTitle").focus()};
+  cal.appendChild(d);
+ }
+}
+
+function renderEvents(){
+ const c=document.getElementById("events");c.innerHTML="";
+ if(!events.length){c.innerHTML='<div class="empty">Nessun evento inserito.</div>';return}
+ [...events].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).forEach(e=>{
+  const i=events.indexOf(e);
+  c.innerHTML+=`<div class="event"><b>${esc(e.title)}</b><br><span class="small">${e.date||""}${e.time?" · "+e.time:""}</span><br><br><button class="danger" onclick="deleteEvent(${i})">Elimina</button></div>`;
+ });
+}
+function deleteEvent(i){events.splice(i,1);saveEvents();renderEvents();renderCalendar()}
+
+function renderShopping(){
+ const c=document.getElementById("shopping");c.innerHTML="";
+ if(!shopping.length){c.innerHTML='<div class="empty">La lista è vuota.</div>';return}
+ shopping.forEach((item,i)=>c.innerHTML+=`<div class="shopping-item"><span>${esc(item)}</span><button class="secondary" onclick="removeShopping(${i})">✓</button></div>`);
+}
+function removeShopping(i){const item=shopping[i];if(item&&!memory.includes(item)){memory.push(item);saveMemory()}shopping.splice(i,1);saveShopping();renderShopping()}
+function addProduct(){const x=document.getElementById("product"),v=x.value.trim();if(!v)return;shopping.push(v);if(!memory.includes(v))memory.push(v);saveShopping();saveMemory();x.value="";renderShopping()}
+document.getElementById("addProduct").onclick=addProduct;
+document.getElementById("product").addEventListener("keydown",e=>{if(e.key==="Enter")addProduct()});
+
+document.getElementById("saveEvent").onclick=()=>{
+ const title=document.getElementById("eventTitle").value.trim(),date=document.getElementById("eventDate").value,time=document.getElementById("eventTime").value;
+ if(!title||!date)return;events.push({title,date,time});saveEvents();renderEvents();renderCalendar();document.getElementById("eventTitle").value="";
+};
+
+function loadWork(){
+ const s=localStorage.getItem("workStart")||"08:30",e=localStorage.getItem("workEnd")||"17:30";
+ document.getElementById("workStart").value=s;document.getElementById("workEnd").value=e;
+ document.getElementById("workSaved").textContent="Orario attuale: "+s+" – "+e;
+}
+document.getElementById("saveWork").onclick=()=>{
+ const s=document.getElementById("workStart").value,e=document.getElementById("workEnd").value;
+ if(!s||!e)return;if(s>=e){alert("L'orario di fine deve essere successivo all'orario di inizio.");return}
+ localStorage.setItem("workStart",s);localStorage.setItem("workEnd",e);document.getElementById("workSaved").textContent="Orario salvato: "+s+" – "+e;
+};
+
+document.getElementById("eventDate").value=localDateString();
+renderToday();loadWork();renderCalendar();renderEvents();renderShopping();
 </script>
+</body></html>
