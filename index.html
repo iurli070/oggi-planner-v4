@@ -368,6 +368,14 @@ document.getElementById(
 };
  
 renderCalendar();
+console.log("DATA", dateString);
+``
+const dateString =
+`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+ 
+console.log("DATA", dateString);
+console.log("EVENTS", events);
+``
 renderEvents();
  
 </script>
