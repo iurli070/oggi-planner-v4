@@ -2,19 +2,24 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+ 
 <title>Oggi Planner V4</title>
  
 <link rel="manifest" href="manifest.webmanifest">
  
 <style>
-*{box-sizing:border-box}
+ 
+*{
+box-sizing:border-box;
+}
  
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 background:#f5f7fb;
-color:#152033;
+color:#1e293b;
 }
  
 header{
@@ -31,10 +36,30 @@ padding:15px;
  
 .card{
 background:white;
-border-radius:18px;
+border-radius:16px;
 padding:16px;
 margin-bottom:15px;
 box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+ 
+h1,h2,h3{
+margin-top:0;
+}
+ 
+input,
+button,
+select{
+font:inherit;
+}
+ 
+input,
+select{
+width:100%;
+padding:10px;
+border:1px solid #d1d5db;
+border-radius:10px;
+margin-top:5px;
+margin-bottom:10px;
 }
  
 button{
@@ -42,17 +67,14 @@ background:#2563eb;
 color:white;
 border:none;
 padding:10px 14px;
-border-radius:12px;
+border-radius:10px;
 cursor:pointer;
 }
  
-input,select{
-width:100%;
-padding:10px;
-margin-top:6px;
-margin-bottom:10px;
-border:1px solid #ddd;
-border-radius:10px;
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 }
  
 .calendar{
@@ -62,10 +84,10 @@ gap:5px;
 }
  
 .day{
-background:#eef3ff;
-padding:12px 0;
-text-align:center;
+background:#eef2ff;
+padding:12px;
 border-radius:10px;
+text-align:center;
 cursor:pointer;
 }
  
@@ -76,8 +98,8 @@ font-weight:bold;
 }
  
 .event{
+background:#f8fafc;
 padding:10px;
-background:#eef3ff;
 border-radius:10px;
 margin-top:8px;
 }
@@ -85,67 +107,80 @@ margin-top:8px;
 .shopping-item{
 display:flex;
 justify-content:space-between;
-padding:8px;
-margin-top:5px;
-background:#f1f5f9;
+align-items:center;
+padding:10px;
+margin-top:6px;
+background:#f8fafc;
 border-radius:10px;
 }
  
 .small{
-font-size:14px;
+font-size:13px;
 color:#64748b;
 }
  
-h1,h2{
-margin-top:0;
-}
 </style>
 </head>
  
 <body>
  
 <header>
+ 
 <h1>Oggi Planner V4</h1>
+ 
 <div id="today"></div>
+ 
 </header>
  
 <main>
  
 <div class="card">
  
-<h2>⚙️ Orario di lavoro</h2>
+<h2>Orario di lavoro</h2>
  
+<div class="grid">
+ 
+<div>
 <label>Inizio</label>
 <input type="time" id="workStart">
+</div>
  
+<div>
 <label>Fine</label>
 <input type="time" id="workEnd">
+</div>
+ 
+</div>
  
 <button id="saveWork">
-Salva
+Salva orario
 </button>
  
 </div>
  
 <div class="card">
  
-<h2>📅 Calendario</h2>
+<h2>Calendario</h2>
  
 <h3 id="monthLabel"></h3>
  
-<div class="calendar" id="calendar"></div>
+<div id="calendar" class="calendar"></div>
  
 </div>
  
 <div class="card">
  
-<h2>➕ Nuovo evento</h2>
+<h2>Nuovo evento</h2>
  
 <input id="eventTitle" placeholder="Titolo evento">
+ 
+<div class="grid">
  
 <input id="eventDate" type="date">
  
 <input id="eventTime" type="time">
+ 
+</div>
  
 <button id="saveEvent">
 Aggiungi evento
@@ -155,7 +190,7 @@ Aggiungi evento
  
 <div class="card">
  
-<h2>🗓️ Eventi</h2>
+<h2>Eventi</h2>
  
 <div id="events"></div>
  
@@ -163,9 +198,9 @@ Aggiungi evento
  
 <div class="card">
  
-<h2>🛒 Lista della spesa</h2>
+<h2>Lista della spesa</h2>
  
-<input id="product">
+<input id="product" placeholder="Nuovo prodotto">
  
 <button id="addProduct">
 Aggiungi prodotto
@@ -179,262 +214,13 @@ Aggiungi prodotto
  
 <script>
  
-const events =
-JSON.parse(localStorage.getItem("events")||"[]");
- 
-const shopping =
-JSON.parse(localStorage.getItem("shopping")||"[]");
- 
-const today =
-new Date();
- 
-document.getElementById("today").innerText =
-today.toLocaleDateString("it-IT",{
+document.getElementById("today").textContent =
+new Date().toLocaleDateString(
+"it-IT",
+{
 weekday:"long",
 day:"numeric",
 month:"long",
 year:"numeric"
-});
- 
-function renderCalendar(){
- 
-const calendar =
-document.getElementById("calendar");
- 
-calendar.innerHTML="";
- 
-const now=new Date();
- 
-const year=now.getFullYear();
- 
-const month=now.getMonth();
- 
-document.getElementById("monthLabel")
-.innerText=
-new Intl.DateTimeFormat(
-'it-IT',
-{month:'long',year:'numeric'}
-).format(now);
- 
-const days=
-new Date(year,month+1,0).getDate();
- 
-for(let i=1;i<=days;i++){
- 
-const d=document.createElement("div");
- 
-d.className="day";
- 
-if(
-i===today.getDate()
-){
-d.classList.add("today");
 }
- 
-d.innerText=i;
- 
-calendar.appendChild(d);
- 
-}
- 
-}
- 
-function renderEvents(){
- 
-const container=
-document.getElementById("events");
- 
-container.innerHTML="";
- 
-events.forEach((e,index)=>{
- 
-container.innerHTML+=`
-<div class="event">
-<b>${e.title}</b><br>
-<span class="small">
-${e.date} ${e.time}
-</span>
-<br><br>
-<button onclick="removeEvent(${index})">
-Elimina
-</button>
-</div>
-`;
- 
-});
- 
-}
- 
-function renderShopping(){
- 
-const container=
-document.getElementById("shopping");
- 
-container.innerHTML="";
- 
-shopping.forEach((item,index)=>{
- 
-container.innerHTML+=`
-<div class="shopping-item">
-${item}
-<button onclick="removeProduct(${index})">
-X
-</button>
-</div>
-`;
- 
-});
- 
-}
- 
-function removeEvent(index){
- 
-events.splice(index,1);
- 
-localStorage.setItem(
-"events",
-JSON.stringify(events)
-);
- 
-renderEvents();
- 
-}
- 
-function removeProduct(index){
- 
-shopping.splice(index,1);
- 
-localStorage.setItem(
-"shopping",
-JSON.stringify(shopping)
-);
- 
-renderShopping();
- 
-}
- 
-document.getElementById(
-"saveEvent"
-).onclick=()=>{
- 
-events.push({
- 
-title:
-document.getElementById(
-"eventTitle"
-).value,
- 
-date:
-document.getElementById(
-"eventDate"
-).value,
- 
-time:
-document.getElementById(
-"eventTime"
-).value
- 
-});
- 
-localStorage.setItem(
-"events",
-JSON.stringify(events)
-);
- 
-renderEvents();
- 
-};
- 
-document.getElementById(
-"addProduct"
-).onclick=()=>{
- 
-const value=
-document.getElementById(
-"product"
-).value;
- 
-shopping.push(value);
- 
-localStorage.setItem(
-"shopping",
-JSON.stringify(shopping)
-);
- 
-renderShopping();
- 
-};
- 
-document.getElementById(
-"saveWork"
-).onclick=()=>{
- 
-localStorage.setItem(
-"workStart",
-document.getElementById(
-"workStart"
-).value
-);
- 
-localStorage.setItem(
-"workEnd",
-document.getElementById(
-"workEnd"
-).value
-);
- 
-alert("Orario salvato");
- 
-};
- 
-document.getElementById(
-"workStart"
-).value=
-localStorage.getItem("workStart")
-||"08:30";
- 
- 
-Mostra più linee
-
-Dopo averlo salvato:
-
-Add file → Create new file → index.html
-Incolla il codice
-Commit changes
-Vai in Settings → Pages
-Attiva GitHub Pages sul branch main
-
-Poi apri:
-
-Plain Text
-https://iurli070.github.io/oggi-planner-v4/
-Mostra più linee
-
-Questa V4 ha già:
-
-✅ calendario mensile
-✅ aggiunta eventi
-✅ lista spesa
-✅ orario di lavoro modificabile
-✅ salvataggio dati
-✅ PWA installabile
-
-Il passo successivo sarà rendere il calendario interattivo (click sul giorno e visualizzazione degli eventi di quel giorno).
-
-Fornisci il tuo feedback su BizChat
-Rendi il calendario interattivoAggiungi la modifica degli eventiCome aggiorno la pagina su GitHub Pages?
-TuttoFileFilePower BIPower BI
-
-
-
-
-Invia un messaggio a Copilot
-Il contenuto generato dall'IA potrebbe non essere corretto
-Impostazioni e molto altro
-Auto
-Altre opzioni
-Altre opzioni
-Altre opzioni
-Riprova
-Usato Auto
-Altre opzioni
+)
