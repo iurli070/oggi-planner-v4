@@ -214,6 +214,16 @@ Aggiungi prodotto
  
 <script>
  
+const events =
+JSON.parse(localStorage.getItem("events") || "[]");
+ 
+function saveEvents() {
+localStorage.setItem(
+"events",
+JSON.stringify(events)
+);
+}
+ 
 document.getElementById("today").textContent =
 new Date().toLocaleDateString(
 "it-IT",
@@ -223,4 +233,132 @@ day:"numeric",
 month:"long",
 year:"numeric"
 }
-)
+);
+ 
+function renderCalendar() {
+ 
+const calendar =
+document.getElementById("calendar");
+ 
+calendar.innerHTML = "";
+ 
+const now = new Date();
+ 
+const year = now.getFullYear();
+const month = now.getMonth();
+ 
+const monthName =
+new Intl.DateTimeFormat(
+"it-IT",
+{
+month:"long",
+year:"numeric"
+}
+).format(now);
+ 
+document.getElementById(
+"monthLabel"
+).textContent = monthName;
+ 
+const daysInMonth =
+new Date(year, month + 1, 0).getDate();
+ 
+for(let day=1; day<=daysInMonth; day++){
+ 
+const d = document.createElement("div");
+ 
+d.className = "day";
+ 
+if(day === now.getDate()){
+d.classList.add("today");
+}
+ 
+d.textContent = day;
+ 
+calendar.appendChild(d);
+ 
+}
+ 
+}
+ 
+function renderEvents() {
+ 
+const container =
+document.getElementById("events");
+ 
+container.innerHTML = "";
+ 
+events.forEach((event,index)=>{
+ 
+container.innerHTML += `
+<div class="event">
+ 
+<b>${event.title}</b><br>
+ 
+${event.date}
+${event.time}
+ 
+<br><br>
+ 
+<button onclick="deleteEvent(${index})">
+Elimina
+</button>
+ 
+</div>
+`;
+ 
+});
+ 
+}
+ 
+function deleteEvent(index){
+ 
+events.splice(index,1);
+ 
+saveEvents();
+ 
+renderEvents();
+ 
+}
+ 
+document.getElementById(
+"saveEvent"
+).onclick = () => {
+ 
+const title =
+document.getElementById(
+"eventTitle"
+).value;
+ 
+const date =
+document.getElementById(
+"eventDate"
+).value;
+ 
+const time =
+document.getElementById(
+"eventTime"
+).value;
+ 
+if(!title) return;
+ 
+events.push({
+title,
+date,
+time
+});
+ 
+saveEvents();
+ 
+renderEvents();
+ 
+document.getElementById(
+"eventTitle"
+).value = "";
+ 
+};
+ 
+renderCalendar();
+renderEvents();
+ 
+</script>
