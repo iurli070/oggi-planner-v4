@@ -273,6 +273,26 @@ const d = document.createElement("div");
  
 d.className = "day";
  
+const dateString =
+`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+ 
+const hasEvent =
+events.some(event => event.date === dateString);
+ 
+if(hasEvent){
+d.style.background = "#16a34a";
+d.style.color = "white";
+}
+ 
+if(day === now.getDate()){
+d.classList.add("today");
+}
+ 
+d.textContent = day;
+ 
+calendar.appendChild(d);
+}
+ 
 if(day === now.getDate()){
 d.classList.add("today");
 const dateString =
@@ -368,13 +388,7 @@ document.getElementById(
 };
  
 renderCalendar();
-console.log("DATA", dateString);
-``
-const dateString =
-`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
- 
-console.log("DATA", dateString);
-console.log("EVENTS", events);
+
 ``
 renderEvents();
  
