@@ -90,7 +90,11 @@ border-radius:10px;
 text-align:center;
 cursor:pointer;
 }
- 
+.hasEvent{
+border:3px solid #16a34a;
+font-weight:bold;
+}
+  
 .today{
 background:#2563eb;
 color:white;
@@ -271,6 +275,11 @@ d.className = "day";
  
 if(day === now.getDate()){
 d.classList.add("today");
+const dateString =
+`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+ 
+if(events.some(e => e.date === dateString)){
+d.classList.add("hasEvent");
 }
  
 d.textContent = day;
